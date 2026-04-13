@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi } from 'vitest'
 import { Modal } from './Modal'
@@ -56,15 +56,26 @@ describe('Modal', () => {
   })
 
   it('calls onClose when the overlay is clicked', async () => {
+    vi.useFakeTimers()
     const onClose = vi.fn()
     render(
       <Modal isOpen={true} onClose={onClose} title="Test">
         <div>content</div>
       </Modal>
     )
-    // Radix dismisses on pointerdown outside Dialog.Content.
-    // Click the overlay element directly.
+    // Flush Radix's setTimeout(0) that registers the pointer listener
+    await act(async () => { vi.runAllTimers() })
     fireEvent.pointerDown(screen.getByTestId('modal-overlay'))
+    vi.useRealTimers()
     expect(onClose).toHaveBeenCalledTimes(1)
+  })
+
+  it('renders with size lg', () => {
+    render(
+      <Modal isOpen={true} onClose={vi.fn()} title="Test" size="lg">
+        <div>content</div>
+      </Modal>
+    )
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
   })
 })

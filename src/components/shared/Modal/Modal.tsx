@@ -21,7 +21,6 @@ export function Modal({ isOpen, onClose, title, size = 'md', children }: ModalPr
         {/* Backdrop */}
         <Dialog.Overlay
           data-testid="modal-overlay"
-          onPointerDown={onClose}
           className="fixed inset-0 z-modal bg-black/50"
         />
 
