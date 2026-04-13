@@ -27,6 +27,8 @@ function ArticlesPanel() {
   }
 
   function handleNew() {
+    // Leave selectedId unchanged — ArticleDetail stays visible behind the modal
+    // and reappears if the user cancels without saving.
     setEditingArticle(undefined)
     setIsEditorOpen(true)
   }
