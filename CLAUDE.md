@@ -24,10 +24,20 @@ Phase 1 — Foundation (in progress)
 
 - All GitHub API calls go through `src/lib/github.ts` only
 - All data mutations go through Zustand stores only
-- All domain types come from `src/types/index.ts` only
-- Never call GitHub API directly from a component or store
-- Never define domain model types inline — always import from types/
 - TypeScript strict mode: no `any`, no `// @ts-ignore`
+
+## Type colocation rules (non-negotiable)
+
+- `src/types/index.ts` — global types only: those consumed by two or more **unrelated** feature areas
+  (currently: `User`, `Role`, `CampaignMeta`, `GitHubConfig`, `ThemePreference`, `ConnectionStatus`, `Visibility`)
+- Feature-specific types — colocated `types.ts` next to the feature
+  (e.g. `Article`, `ArticleType` live in `src/components/articles/types.ts`)
+- Lib-specific types — defined in the lib file itself
+  (e.g. `StoredFile<T>` is defined and exported from `src/lib/github.ts`)
+- Simple single-component prop interfaces — exported from the component file directly
+  (e.g. `export interface ModalProps { ... }` in `Modal.tsx`)
+- Phase N+ types with no current consumers — define colocated when their feature is built; do NOT pre-populate `src/types/index.ts`
+- Never define domain model types inline in a component — always import from the appropriate location above
 
 ## CSS rules (non-negotiable)
 

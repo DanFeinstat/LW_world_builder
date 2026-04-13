@@ -3,7 +3,8 @@ import userEvent from '@testing-library/user-event'
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 import { ArticleList } from '@/components/articles/ArticleList'
 import { useArticleStore } from '@/stores/useArticleStore'
-import type { Article, User, GitHubConfig } from '@/types'
+import type { Article } from '@/components/articles/types'
+import type { User, GitHubConfig } from '@/types'
 
 vi.mock('@/context/AppContext', () => ({
   useAppContext: vi.fn(),

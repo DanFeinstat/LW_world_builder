@@ -4,7 +4,7 @@ import { useArticleStore } from '@/stores/useArticleStore'
 import { useAppContext } from '@/context/AppContext'
 import { useToast } from '@/components/shared/Toast/useToast'
 import { ArticleTypeBadge } from './ArticleTypeBadge'
-import type { Article } from '@/types'
+import type { Article } from './types'
 
 interface ArticleDetailProps {
   article: Article

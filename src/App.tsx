@@ -8,7 +8,7 @@ import { ArticleList } from '@/components/articles/ArticleList'
 import { ArticleDetail } from '@/components/articles/ArticleDetail'
 import { ArticleEditor } from '@/components/articles/ArticleEditor'
 import { useArticleStore } from '@/stores/useArticleStore'
-import type { Article } from '@/types'
+import type { Article } from '@/components/articles/types'
 
 type View = 'articles'
 type PanelMode = 'detail' | 'editor' | 'none'
