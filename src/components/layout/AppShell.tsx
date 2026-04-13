@@ -27,8 +27,8 @@ export function AppShell({ children, currentView, onNavigate }: AppShellProps) {
           onToggleCollapse={() => setCollapsed(c => !c)}
         />
 
-        {/* Main content area — scrollable, flexible width */}
-        <main className="flex-1 overflow-y-auto min-w-0">
+        {/* Main content area — children manage their own scroll */}
+        <main className="flex-1 overflow-hidden min-w-0 flex flex-col">
           {children}
         </main>
       </div>
