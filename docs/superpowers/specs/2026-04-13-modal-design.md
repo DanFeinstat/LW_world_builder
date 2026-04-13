@@ -168,7 +168,7 @@ fixed inset-0 z-modal flex items-center justify-center p-4
       flex-shrink-0 ml-4 — uses existing button token styles
 
     // Body
-    flex-1 overflow-y-auto p-6
+    flex-1 overflow-y-auto  (no padding — consumers own their own padding)
       {children}
 ```
 
