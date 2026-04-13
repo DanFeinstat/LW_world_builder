@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Tailwind's Preflight handles box-sizing, margin, padding resets.
+     These are the additions Preflight doesn't cover. */
+  html {
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    font-family: var(--font-ui);
+    color: var(--color-text-primary);
+    background-color: var(--color-surface);
+  }
+  button {
+    cursor: pointer;
+  }
+  a {
+    color: inherit;
+  }
+}
+
+@layer components {
+  /* Prose — for article bodies, session notes, journal entries */
+  .prose {
+    font-family: var(--font-body);
+    @apply text-base leading-loose text-text-primary;
+  }
+  .prose h1,
+  .prose h2,
+  .prose h3 {
+    font-family: var(--font-display);
+    @apply leading-tight mt-6 mb-3;
+  }
+  .prose p {
+    @apply mb-4;
+  }
+  .prose ul,
+  .prose ol {
+    @apply pl-6 mb-4;
+  }
+  .prose li {
+    @apply mb-1;
+  }
+  .prose strong {
+    @apply font-semibold;
+  }
+  .prose em {
+    @apply italic;
+  }
+  .prose a {
+    @apply text-dm underline;
+  }
+  .prose code {
+    font-family: var(--font-mono);
+    @apply text-sm bg-surface-sunken px-1 rounded-sm;
+  }
+}
