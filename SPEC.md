@@ -17,7 +17,7 @@ A browser-based D&D campaign management tool for a small group (1–4 DMs, up to
 | Layer | Choice | Notes |
 |---|---|---|
 | Framework | React + TypeScript (Vite) | Functional components + hooks only. Strict mode on. |
-| Styling | CSS Modules | One `.module.css` per component. No CSS-in-JS. No Tailwind. No UI library. |
+| Styling | Tailwind CSS v3 + CSS custom properties | Utility classes in JSX. No CSS-in-JS. No UI library. Dark mode via `[data-theme]` CSS variable switching — not Tailwind's `dark:` variant. |
 | Dynamic classes | `clsx` | For conditional/composed className logic. Never string template literals for multi-class logic. |
 | Animations | CSS transitions/keyframes by default; Framer Motion for orchestrated animations | See Animation Guidelines below. |
 | Data layer | GitHub Contents API (REST) | Read: PAT required (unauthenticated rate limits too low for multi-user). Write: PAT in localStorage. |
@@ -58,7 +58,7 @@ claude mcp add playwright -s user -- npx @playwright/mcp@latest
 
 ## Animation Guidelines
 
-Use **CSS** (transitions + `@keyframes` in `.module.css`) as the default for:
+Use **Tailwind transition utilities** (`transition-*`, `duration-*`, `ease-*`) as the default for:
 - Hover and focus state changes
 - Simple fades, slides, and scales
 - Color and opacity transitions
@@ -77,9 +77,11 @@ Never use Framer Motion where a CSS transition is sufficient. Import only what i
 
 ## CSS Architecture
 
+Tailwind CSS v3 utility classes in JSX, with CSS custom properties as the single source of truth for design values. This gives colocation (styles visible alongside markup) while keeping dark mode clean (variable values flip, Tailwind classes stay the same).
+
 ### Layer 1 — Design Tokens (`src/styles/tokens.css`)
 
-Global CSS custom properties. Imported **once** in `main.tsx`. Never imported per-component. Every value that needs to be consistent across the app lives here.
+Global CSS custom properties. Imported **once** in `main.tsx` before `main.css`. Never imported per-component. Every themeable value lives here — Tailwind config references these variables, not literal values.
 
 ```css
 /* src/styles/tokens.css */
@@ -334,16 +336,54 @@ Example — consuming it in a component:
 > - If a pattern appears in only 2 components, just repeat it — don't abstract prematurely
 > - Maximum one level of composition — do not compose a composed class
 
-### Layer 5 — Component Modules
+### Layer 2 — Tailwind Entry (`src/styles/main.css`)
 
-One `.module.css` per component, colocated in the same directory. All component-specific styles live here. Import with `import styles from './Component.module.css'`.
+Contains the three Tailwind directives plus `@layer base` overrides and `@layer components` for structural patterns like `.prose` that benefit from a named abstraction. Imported once in `main.tsx` after `tokens.css`.
+
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Additions to Preflight — body font, colors pulled from tokens */
+}
+
+@layer components {
+  /* .prose — article body typography. Named abstraction is justified here
+     because it's used across many unrelated components with identical styling. */
+}
+```
+
+### Layer 3 — Tailwind Config (`tailwind.config.ts`)
+
+Maps Tailwind utility names to CSS variable values. Colors and shadows use variables (they flip with dark mode). Spacing, radii, and font sizes use literal values (they don't change with theme).
+
+```ts
+// colors — always use CSS variables
+colors: {
+  dm: 'var(--color-dm)',
+  surface: 'var(--color-surface)',
+  // ...
+}
+
+// spacing — literal values matching token scale
+spacing: {
+  1: '4px', 2: '8px', 3: '12px', 4: '16px', // ...
+}
+```
+
+### Layer 4 — Component Styles (inline in JSX)
+
+Tailwind utility classes written directly in `className`. Use `clsx` for all conditional logic.
 
 **Rules:**
 - Use `clsx` for all multi-condition className logic
-- No inline `style` props except for values that are runtime-dynamic and cannot be expressed as a class (e.g. `style={{ color: user.color }}` for a user's chosen color)
-- Reference tokens via `var(--token-name)` — never hardcode colors, spacing, or radii
-- Responsive layout via CSS Grid and Flexbox. Avoid fixed pixel widths on main content areas. Keep layouts flexible enough for future mobile adaptation.
-- Animations: CSS `transition` and `@keyframes` here by default; Framer Motion via JS in the component from Phase 4+
+- No inline `style` props except for runtime-dynamic values (e.g. `style={{ color: user.color }}`)
+- Never hardcode color, spacing, or radius values — always use mapped Tailwind utilities
+- Extract to `@layer components` in `main.css` only when a pattern appears in 5+ unrelated components and the class string is meaningfully long. Do not abstract prematurely.
+- Responsive layout via Tailwind's grid/flex utilities. Avoid fixed widths on content areas.
+- Animations: Tailwind transition utilities by default; `@keyframes` added to `tailwind.config.ts` + `animate-*` class; Framer Motion from Phase 4+
 
 ---
 
@@ -1009,14 +1049,14 @@ Phase 1 — Foundation
 
 ## CSS rules (non-negotiable)
 
-- CSS Modules only — one `.module.css` per component, colocated
-- Design tokens via `var(--token)` from `src/styles/tokens.css`
+- Tailwind CSS v3 utility classes in JSX — no `.module.css` files
+- Design tokens in `src/styles/tokens.css` (CSS custom properties) — the source of truth
+- Tailwind config maps utility names to those variables — never hardcode values in config
 - `clsx` for all conditional className logic
 - No inline `style` except runtime-dynamic values (e.g. user.color)
-- Shared base styles in `src/styles/shared/*.module.css` via `composes`
-- `globals.css` stays under ~80 lines — not a utility class system
+- `@layer components` in `main.css` for patterns used across 5+ unrelated components — no earlier
 - Framer Motion only from Phase 4. Do not install earlier.
-- Dark mode via `data-theme` attribute on `<html>`. Never use hardcoded colors.
+- Dark mode via `data-theme` attribute on `<html>` + CSS variable switching. Never use Tailwind `dark:` variant.
 
 ## Theme system
 
@@ -1091,7 +1131,6 @@ Always use `src/lib/ids.ts`. Prefix pattern:
 - GitHub write requires the current file sha. Always fetch before write.
 - 409 Conflict means sha mismatch — re-fetch and retry once.
 - Polling pauses when tab is not visible. Resume on visibilitychange.
-- `composes` in CSS Modules only works on plain class selectors.
 - Do not fetch all data on load — lazy-fetch per section.
 - App repo and data repo are separate. Don't confuse them.
 - All reads use PAT auth (unauthenticated rate limits are too low).
@@ -1127,8 +1166,8 @@ phase. Date each entry. Never delete old entries.)
 - **IDs** via `src/lib/ids.ts` with type prefix.
 - **Optimistic updates:** update store → write async → rollback + toast on failure.
 - **Every async operation** must visibly handle loading, success, and error states.
-- **CSS Modules + clsx only.** No inline styles except runtime-dynamic values.
-- **Dark mode from Phase 1.** Use `data-theme` attribute. Never hardcode colors.
+- **Tailwind utility classes + clsx only.** No `.module.css` files. No inline styles except runtime-dynamic values.
+- **Dark mode from Phase 1.** Use `data-theme` attribute + CSS variable switching. Never use Tailwind `dark:` variant. Never hardcode colors.
 - **Framer Motion only from Phase 4.** Do not install earlier.
 - **Components under ~150 lines.** Split if larger.
 - **No premature abstraction.**
