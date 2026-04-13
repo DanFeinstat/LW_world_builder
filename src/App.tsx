@@ -1,3 +1,9 @@
+import { AppProvider } from '@/context/AppContext'
+
 export default function App() {
-  return <div>Campaign Manager — loading…</div>
+  return (
+    <AppProvider>
+      <div>Campaign Manager — loading…</div>
+    </AppProvider>
+  )
 }
