@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import type { User, CampaignMeta, ThemePreference, ConnectionStatus, GitHubConfig } from '@/types'
 import { getStoredTheme, setStoredTheme, applyTheme } from '@/lib/theme'
+import { createContext } from './createContext'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -23,16 +24,17 @@ interface AppContextValue {
   connectionStatus: ConnectionStatus
   setConnectionStatus: (status: ConnectionStatus) => void
 
-  // GitHub config (read from localStorage)
+  // GitHub config (persisted to localStorage)
   githubConfig: GitHubConfig | null
   setGithubConfig: (config: GitHubConfig) => void
 }
 
 // ---------------------------------------------------------------------------
-// Context
+// Context + hook
 // ---------------------------------------------------------------------------
 
-const AppContext = createContext<AppContextValue | null>(null)
+const [AppContext, useAppContext] = createContext<AppContextValue>('AppContext')
+export { useAppContext }
 
 // ---------------------------------------------------------------------------
 // Provider
@@ -93,14 +95,4 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       {children}
     </AppContext.Provider>
   )
-}
-
-// ---------------------------------------------------------------------------
-// Hook
-// ---------------------------------------------------------------------------
-
-export function useAppContext(): AppContextValue {
-  const ctx = useContext(AppContext)
-  if (!ctx) throw new Error('useAppContext must be used within AppProvider')
-  return ctx
 }
