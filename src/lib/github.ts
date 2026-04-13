@@ -1,4 +1,10 @@
-import type { GitHubConfig, StoredFile } from '@/types'
+import type { GitHubConfig } from '@/types'
+
+/** A file fetched from GitHub — decoded data plus the sha needed for writes. */
+export interface StoredFile<T> {
+  data: T
+  sha: string
+}
 
 // ---------------------------------------------------------------------------
 // Internal helpers

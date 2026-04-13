@@ -2,7 +2,8 @@ import { render, screen } from '@testing-library/react'
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 import { ArticleEditor } from '@/components/articles/ArticleEditor'
 import { useArticleStore } from '@/stores/useArticleStore'
-import type { Article, User, GitHubConfig } from '@/types'
+import type { Article } from './types'
+import type { User, GitHubConfig } from '@/types'
 
 vi.mock('@/context/AppContext', () => ({
   useAppContext: vi.fn(),

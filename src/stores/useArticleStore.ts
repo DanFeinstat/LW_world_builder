@@ -1,5 +1,6 @@
 import { create } from 'zustand'
-import type { Article, GitHubConfig } from '@/types'
+import type { Article } from '@/components/articles/types'
+import type { GitHubConfig } from '@/types'
 import { readFile, writeFile, deleteFile, listTree, GitHubError } from '@/lib/github'
 import { generateId } from '@/lib/ids'
 

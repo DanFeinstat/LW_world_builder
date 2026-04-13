@@ -3,7 +3,8 @@ import clsx from 'clsx'
 import { useArticleStore } from '@/stores/useArticleStore'
 import { useAppContext } from '@/context/AppContext'
 import { useToast } from '@/components/shared/Toast/useToast'
-import type { Article, ArticleType, Visibility } from '@/types'
+import type { Article, ArticleType } from './types'
+import type { Visibility } from '@/types'
 
 const ARTICLE_TYPES: ArticleType[] = ['npc', 'location', 'faction', 'lore', 'quest']
 

@@ -8,63 +8,49 @@ import { ArticleList } from '@/components/articles/ArticleList'
 import { ArticleDetail } from '@/components/articles/ArticleDetail'
 import { ArticleEditor } from '@/components/articles/ArticleEditor'
 import { useArticleStore } from '@/stores/useArticleStore'
-import type { Article } from '@/types'
+import type { Article } from '@/components/articles/types'
+import { Modal } from '@/components/shared/Modal/Modal'
 
 type View = 'articles'
-type PanelMode = 'detail' | 'editor' | 'none'
 
 function ArticlesPanel() {
   const articles = useArticleStore(state => state.articles)
   const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [mode, setMode] = useState<PanelMode>('none')
+  const [isEditorOpen, setIsEditorOpen] = useState(false)
   const [editingArticle, setEditingArticle] = useState<Article | undefined>(undefined)
 
   const selectedArticle = articles.find(a => a.id === selectedId) ?? null
 
   function handleSelect(article: Article) {
     setSelectedId(article.id)
-    setMode('detail')
     setEditingArticle(undefined)
   }
 
   function handleNew() {
+    // Leave selectedId unchanged — ArticleDetail stays visible behind the modal
+    // and reappears if the user cancels without saving.
     setEditingArticle(undefined)
-    setMode('editor')
-    setSelectedId(null)
+    setIsEditorOpen(true)
   }
 
   function handleEdit(article: Article) {
     setEditingArticle(article)
-    setMode('editor')
-  }
-
-  function handleBack() {
-    setMode('none')
-    setSelectedId(null)
-    setEditingArticle(undefined)
+    setIsEditorOpen(true)
   }
 
   function handleSaved(article: Article) {
     setSelectedId(article.id)
-    setMode('detail')
+    setIsEditorOpen(false)
     setEditingArticle(undefined)
   }
 
   function handleCancel() {
-    if (editingArticle) {
-      // Was editing existing — go back to detail
-      setMode('detail')
-      setEditingArticle(undefined)
-    } else {
-      // Was creating new — go back to empty state
-      setMode('none')
-      setSelectedId(null)
-    }
+    setIsEditorOpen(false)
+    setEditingArticle(undefined)
   }
 
   function handleNavigateTo(article: Article) {
     setSelectedId(article.id)
-    setMode('detail')
     setEditingArticle(undefined)
   }
 
@@ -79,31 +65,37 @@ function ArticlesPanel() {
         />
       </div>
 
-      {/* Right panel — detail or editor */}
+      {/* Right panel — detail or empty state; editor is now in a modal */}
       <div className="flex-1 min-w-0 overflow-hidden">
-        {mode === 'detail' && selectedArticle && (
+        {selectedArticle ? (
           <ArticleDetail
             article={selectedArticle}
             allArticles={articles}
-            onBack={handleBack}
+            onBack={() => setSelectedId(null)}
             onEdit={handleEdit}
             onNavigateTo={handleNavigateTo}
           />
-        )}
-        {mode === 'editor' && (
-          <ArticleEditor
-            article={editingArticle}
-            allArticles={articles}
-            onSaved={handleSaved}
-            onCancel={handleCancel}
-          />
-        )}
-        {mode === 'none' && (
+        ) : (
           <div className="flex h-full items-center justify-center">
             <p className="text-sm text-text-muted">Select an article to view it.</p>
           </div>
         )}
       </div>
+
+      {/* Editor modal — renders into document.body via Radix Portal */}
+      <Modal
+        isOpen={isEditorOpen}
+        onClose={handleCancel}
+        title={editingArticle ? `Edit ${editingArticle.title}` : 'New Article'}
+        size="lg"
+      >
+        <ArticleEditor
+          article={editingArticle}
+          allArticles={articles}
+          onSaved={handleSaved}
+          onCancel={handleCancel}
+        />
+      </Modal>
     </div>
   )
 }

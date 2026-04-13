@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import type { Article } from '@/types'
+import type { Article } from './types'
 import { ArticleTypeBadge } from './ArticleTypeBadge'
 
 interface ArticleCardProps {

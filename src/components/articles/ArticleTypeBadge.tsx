@@ -1,4 +1,4 @@
-import type { ArticleType } from '@/types'
+import type { ArticleType } from './types'
 
 const TYPE_LABELS: Record<ArticleType, string> = {
   npc: 'NPC',

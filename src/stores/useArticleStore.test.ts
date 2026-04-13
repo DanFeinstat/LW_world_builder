@@ -1,6 +1,7 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 import { useArticleStore } from '@/stores/useArticleStore'
-import type { Article, GitHubConfig } from '@/types'
+import type { Article } from '@/components/articles/types'
+import type { GitHubConfig } from '@/types'
 
 vi.mock('@/lib/github', () => ({
   readFile: vi.fn(),

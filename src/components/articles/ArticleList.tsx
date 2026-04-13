@@ -4,7 +4,7 @@ import { useArticleStore } from '@/stores/useArticleStore'
 import { useAppContext } from '@/context/AppContext'
 import { useToast } from '@/components/shared/Toast/useToast'
 import { ArticleCard } from './ArticleCard'
-import type { Article, ArticleType } from '@/types'
+import type { Article, ArticleType } from './types'
 
 const TYPE_FILTERS: { label: string; value: ArticleType | 'all' }[] = [
   { label: 'All', value: 'all' },
