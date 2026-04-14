@@ -20,6 +20,7 @@ export function usePolling(
     async function poll() {
       if (!config) return
       if (!devFlag('polling')) return
+      if (devFlag('offline')) return
 
       try {
         const sha = await pollCommit(config, 'main')

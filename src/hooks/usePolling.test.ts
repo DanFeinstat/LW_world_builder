@@ -55,7 +55,7 @@ describe('usePolling', () => {
       remove: vi.fn(),
     })
 
-    vi.mocked(devFlag).mockReturnValue(true)
+    vi.mocked(devFlag).mockImplementation((name: string) => name === 'polling')
   })
 
   afterEach(() => {
