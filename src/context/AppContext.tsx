@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import type { User, CampaignMeta, ThemePreference, ConnectionStatus, GitHubConfig } from '@/types'
 import { getStoredTheme, setStoredTheme, applyTheme } from '@/lib/theme'
 import { createContext } from './createContext'
+import { usePolling } from '@/hooks/usePolling'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -65,6 +66,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     applyTheme(theme)
   }, [theme])
+
+  usePolling(githubConfig, setConnectionStatus)
 
   function setTheme(newTheme: ThemePreference) {
     setStoredTheme(newTheme)
