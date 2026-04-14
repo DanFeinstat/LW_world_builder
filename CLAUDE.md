@@ -135,7 +135,7 @@ Always use `src/lib/ids.ts`. Prefix pattern:
 
 ## Phase completion log
 
-[ Phase 1 ] — in progress
+[ Phase 1 ] — complete
 [ Phase 2 ] — not started
 [ Phase 3 ] — not started
 [ Phase 4 ] — not started
