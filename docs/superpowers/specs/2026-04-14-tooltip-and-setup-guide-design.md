@@ -154,6 +154,7 @@ A "Need help setting up?" text link centered below the "Connect Repository" butt
 - Repository access: select only the shared campaign repo
 - Permissions → Contents: Read and Write
 - Generate and copy the token
+- *If your GitHub organization does not support fine-grained tokens, create a classic token (https://github.com/settings/tokens/new) with the `repo` scope instead.*
 
 **4. Connect**
 - Enter the repo owner's GitHub username, the repo name, and your token into the form
