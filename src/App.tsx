@@ -10,6 +10,7 @@ import { ArticleEditor } from '@/components/articles/ArticleEditor'
 import { useArticleStore } from '@/stores/useArticleStore'
 import type { Article } from '@/components/articles/types'
 import { Modal } from '@/components/shared/Modal/Modal'
+import { DevToolbar } from '@/components/dev/DevToolbar'
 
 type View = 'articles'
 
@@ -119,6 +120,7 @@ export default function App() {
     <AppProvider>
       <AppRoutes />
       <ToastStack />
+      {import.meta.env.DEV && <DevToolbar />}
     </AppProvider>
   )
 }
