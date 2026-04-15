@@ -21,7 +21,7 @@ export function ArticlesPanel() {
 
   const selectedArticle = articleId ? (articles.find(a => a.id === articleId) ?? null) : null
   // Only show 404 once articles have loaded — avoids a flash during initial fetch
-  const articleNotFound = !!articleId && !loading && !articles.find(a => a.id === articleId)
+  const articleNotFound = !!articleId && !loading && selectedArticle === null
 
   function handleSelect(article: Article) {
     navigate(`/articles/${article.id}`)
@@ -49,11 +49,6 @@ export function ArticlesPanel() {
     setEditingArticle(undefined)
   }
 
-  function handleNavigateTo(article: Article) {
-    navigate(`/articles/${article.id}`)
-    setEditingArticle(undefined)
-  }
-
   return (
     <div className="flex h-full min-h-0">
       {/* Article list — fixed width left column */}
@@ -75,7 +70,7 @@ export function ArticlesPanel() {
             allArticles={articles}
             onBack={() => navigate('/articles')}
             onEdit={handleEdit}
-            onNavigateTo={handleNavigateTo}
+            onNavigateTo={handleSelect}
           />
         ) : (
           <div className="flex h-full items-center justify-center">
