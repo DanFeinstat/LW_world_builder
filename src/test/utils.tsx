@@ -1,6 +1,7 @@
 // src/test/utils.tsx
 import { render, type RenderResult } from '@testing-library/react'
 import { createMemoryRouter, RouterProvider } from 'react-router'
+import type { ReactElement } from 'react'
 
 /**
  * Renders `ui` inside a memory router.
@@ -10,7 +11,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router'
  * separately — this helper only provides router context.
  */
 export function renderWithRouter(
-  ui: React.ReactElement,
+  ui: ReactElement,
   { initialPath = '/' }: { initialPath?: string } = {},
 ): RenderResult {
   const router = createMemoryRouter(
