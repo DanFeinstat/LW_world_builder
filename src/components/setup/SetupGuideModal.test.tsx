@@ -20,7 +20,7 @@ describe('SetupGuideModal', () => {
     expect(screen.getByText(/Create the data repo/i)).toBeInTheDocument()
     expect(screen.getByText(/Invite your group/i)).toBeInTheDocument()
     expect(screen.getByText(/Create your Personal Access Token/i)).toBeInTheDocument()
-    expect(screen.getByText(/Connect/i)).toBeInTheDocument()
+    expect(screen.getByText('Connect')).toBeInTheDocument()
   })
 
   it('renders github.com/new link with target="_blank" and rel="noreferrer"', () => {
