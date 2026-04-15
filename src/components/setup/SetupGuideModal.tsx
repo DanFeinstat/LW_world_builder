@@ -1,5 +1,6 @@
-// src/components/setup/SetupGuideModal.tsx
 import { Modal } from '@/components/shared/Modal/Modal'
+import clsx from 'clsx'
+import { PropsWithChildren } from 'react'
 
 interface SetupGuideModalProps {
   isOpen: boolean
@@ -9,28 +10,34 @@ interface SetupGuideModalProps {
 interface StepProps {
   number: number
   title: string
-  children: React.ReactNode
   note?: string
+  hideBorder?: boolean
 }
 
-function Step({ number, title, children, note }: StepProps) {
+function Step({ number, title, children, note, hideBorder = false }: PropsWithChildren<StepProps>) {
   return (
-    <div className="flex gap-5 px-6 py-5 border-b border-border last:border-b-0">
-      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-dm-subtle text-dm font-display text-base font-bold flex items-center justify-center">
-        {number}
-      </div>
-      <div className="flex flex-col gap-2 min-w-0 pt-1">
-        <p className="text-sm font-display font-semibold text-text-primary">{title}</p>
-        <div className="text-sm text-text-secondary leading-base">{children}</div>
-        {note && (
-          <p className="text-xs text-text-muted mt-1 italic">{note}</p>
-        )}
+    <div className='px-6'>
+      <div className={clsx('flex py-5 gap-5', !hideBorder && 'border-t border-border')}>
+        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-dm-subtle text-dm font-display text-base font-bold flex items-center justify-center">
+          {number}
+        </div>
+        <div className="flex flex-col gap-2 min-w-0 pt-1">
+          <p className="text-sm font-display font-semibold text-text-primary">{title}</p>
+          <div className="text-sm text-text-secondary leading-base">{children}</div>
+          {note && (
+            <p className="text-xs text-text-muted mt-1 italic">{note}</p>
+          )}
+        </div>
       </div>
     </div>
   )
 }
 
-function ExternalLink({ href, children }: { href: string; children: React.ReactNode }) {
+interface ExternalLinkProps {
+  href: string
+}
+
+function ExternalLink({ href, children }: PropsWithChildren<ExternalLinkProps>) {
   return (
     <a
       href={href}
@@ -43,11 +50,16 @@ function ExternalLink({ href, children }: { href: string; children: React.ReactN
   )
 }
 
+const SetupGuideModalTitle = () => {
+  return (
+    <h3 className="pl-3 py-2">Setting Up Campaign Manager</h3>)
+}
+
 export function SetupGuideModal({ isOpen, onClose }: SetupGuideModalProps) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Setting Up Campaign Manager" size="md">
-      <div className="flex flex-col">
-        <Step number={1} title="Create the data repo">
+    <Modal isOpen={isOpen} onClose={onClose} title={<SetupGuideModalTitle />} size="md">
+      <div className="flex flex-col pb-2">
+        <Step number={1} title="Create the data repo" hideBorder>
           <p>
             Go to{' '}
             <ExternalLink href="https://github.com/new">github.com/new</ExternalLink>
@@ -59,7 +71,6 @@ export function SetupGuideModal({ isOpen, onClose }: SetupGuideModalProps) {
         <Step
           number={2}
           title="Invite your group"
-          note="Skip this step if you are the repo owner."
         >
           <p>Go to your repo → Settings → Collaborators → Add people.</p>
           <p className="mt-1">Invite each DM and player by GitHub username. Each person must accept the invitation before creating their token.</p>

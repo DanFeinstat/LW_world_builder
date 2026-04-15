@@ -1,12 +1,12 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import clsx from 'clsx'
+import { ReactNode, PropsWithChildren } from 'react'
 
 export interface ModalProps {
   isOpen: boolean
   onClose: () => void
-  title: string
+  title: ReactNode
   size?: 'md' | 'lg'
-  children: React.ReactNode
 }
 
 const sizeClass = {
@@ -14,14 +14,14 @@ const sizeClass = {
   lg: 'w-[720px]',
 } as const
 
-export function Modal({ isOpen, onClose, title, size = 'md', children }: ModalProps) {
+export function Modal({ isOpen, onClose, title, size = 'md', children }: PropsWithChildren<ModalProps>) {
   return (
     <Dialog.Root open={isOpen} onOpenChange={open => { if (!open) onClose() }}>
       <Dialog.Portal>
         {/* Backdrop */}
         <Dialog.Overlay
           data-testid="modal-overlay"
-          className="fixed inset-0 z-modal bg-black/50"
+          className="fixed inset-0 z-modal bg-black/50 opacity-25"
         />
 
         {/* Panel — Dialog.Content IS the dialog element (role="dialog", aria-modal) */}
@@ -34,7 +34,7 @@ export function Modal({ isOpen, onClose, title, size = 'md', children }: ModalPr
           )}
         >
           {/* Header */}
-          <div className="flex items-center h-14 px-6 border-b border-border flex-shrink-0">
+          <div className="flex items-center h-14 px-4 border-b border-border flex-shrink-0">
             <Dialog.Title className="flex-1 truncate text-base font-semibold text-text-primary">
               {title}
             </Dialog.Title>
