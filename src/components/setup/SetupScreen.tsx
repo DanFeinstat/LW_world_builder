@@ -4,9 +4,21 @@ import { listTree, writeFile, GitHubError } from '@/lib/github'
 import { readFile } from '@/lib/github'
 import { useAppContext } from '@/context/AppContext'
 import type { GitHubConfig, CampaignMeta } from '@/types'
+import { Tooltip } from '@/components/shared/Tooltip/Tooltip'
+import { SetupGuideModal } from './SetupGuideModal'
 
 const DEFAULT_OWNER = import.meta.env.VITE_GITHUB_OWNER ?? ''
 const DEFAULT_REPO = import.meta.env.VITE_GITHUB_REPO ?? ''
+
+const PatTooltipContent = (
+  <ol className="flex flex-col gap-1 list-decimal list-inside">
+    <li>GitHub → Settings → Developer Settings → Personal access tokens → Fine-grained tokens</li>
+    <li>Click "Generate new token"</li>
+    <li>Repository access: select only the shared campaign repo</li>
+    <li>Permissions → Contents: Read and Write</li>
+    <li>Generate, copy, and paste it here</li>
+  </ol>
+)
 
 export function SetupScreen() {
   const { setGithubConfig, setCampaignMeta } = useAppContext()
@@ -16,6 +28,7 @@ export function SetupScreen() {
   const [pat, setPat] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+  const [isGuideOpen, setIsGuideOpen] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -101,7 +114,8 @@ export function SetupScreen() {
             <Field
               label="Personal Access Token"
               htmlFor="pat"
-              hint="Needs repo read/write scope. Stored locally in your browser only."
+              hint="Stored locally in your browser only."
+              tooltip={PatTooltipContent}
             >
               <input
                 id="pat"
@@ -132,9 +146,19 @@ export function SetupScreen() {
             >
               {isLoading ? 'Connecting…' : 'Connect Repository'}
             </button>
+
+            <button
+              type="button"
+              onClick={() => setIsGuideOpen(true)}
+              className="text-xs text-text-muted hover:text-text-secondary transition-colors duration-fast text-center"
+            >
+              Need help setting up?
+            </button>
           </form>
         </div>
       </div>
+
+      <SetupGuideModal isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
     </div>
   )
 }
@@ -155,18 +179,23 @@ function Field({
   label,
   htmlFor,
   hint,
+  tooltip,
   children,
 }: {
   label: string
   htmlFor: string
   hint?: string
+  tooltip?: React.ReactNode
   children: React.ReactNode
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <label htmlFor={htmlFor} className="text-sm font-medium text-text-primary">
-        {label}
-      </label>
+      <div className="flex items-center gap-1">
+        <label htmlFor={htmlFor} className="text-sm font-medium text-text-primary">
+          {label}
+        </label>
+        {tooltip && <Tooltip content={tooltip} />}
+      </div>
       {children}
       {hint && <p className="text-xs text-text-muted">{hint}</p>}
     </div>
