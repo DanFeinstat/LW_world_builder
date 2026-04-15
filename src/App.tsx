@@ -1,126 +1,76 @@
-import { useState } from 'react'
+// src/App.tsx
+import { createHashRouter, RouterProvider, Navigate, Outlet } from 'react-router'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 import { AppProvider, useAppContext } from '@/context/AppContext'
 import { SetupScreen } from '@/components/setup/SetupScreen'
 import { LoginScreen } from '@/components/auth/LoginScreen'
 import { AppShell } from '@/components/layout/AppShell'
 import { ToastStack } from '@/components/shared/Toast/Toast'
-import { ArticleList } from '@/components/articles/ArticleList'
-import { ArticleDetail } from '@/components/articles/ArticleDetail'
-import { ArticleEditor } from '@/components/articles/ArticleEditor'
-import { useArticleStore } from '@/stores/useArticleStore'
-import type { Article } from '@/components/articles/types'
-import { Modal } from '@/components/shared/Modal/Modal'
+import { ArticlesPanel } from '@/components/articles/ArticlesPanel'
+import { NotFound } from '@/components/shared/NotFound/NotFound'
 import { DevToolbar } from '@/components/dev/DevToolbar'
 
-type View = 'articles'
+// ---------------------------------------------------------------------------
+// Placeholder for sections not yet implemented
+// ---------------------------------------------------------------------------
 
-function ArticlesPanel() {
-  const articles = useArticleStore(state => state.articles)
-  const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [isEditorOpen, setIsEditorOpen] = useState(false)
-  const [editingArticle, setEditingArticle] = useState<Article | undefined>(undefined)
-
-  const selectedArticle = articles.find(a => a.id === selectedId) ?? null
-
-  function handleSelect(article: Article) {
-    setSelectedId(article.id)
-    setEditingArticle(undefined)
-  }
-
-  function handleNew() {
-    // Leave selectedId unchanged — ArticleDetail stays visible behind the modal
-    // and reappears if the user cancels without saving.
-    setEditingArticle(undefined)
-    setIsEditorOpen(true)
-  }
-
-  function handleEdit(article: Article) {
-    setEditingArticle(article)
-    setIsEditorOpen(true)
-  }
-
-  function handleSaved(article: Article) {
-    setSelectedId(article.id)
-    setIsEditorOpen(false)
-    setEditingArticle(undefined)
-  }
-
-  function handleCancel() {
-    setIsEditorOpen(false)
-    setEditingArticle(undefined)
-  }
-
-  function handleNavigateTo(article: Article) {
-    setSelectedId(article.id)
-    setEditingArticle(undefined)
-  }
-
+function ComingSoon({ section }: { section: string }) {
   return (
-    <div className="flex h-full min-h-0">
-      {/* Article list — fixed width left column */}
-      <div className="w-72 shrink-0 border-r border-border overflow-hidden flex flex-col">
-        <ArticleList
-          selectedId={selectedId}
-          onSelect={handleSelect}
-          onNew={handleNew}
-        />
-      </div>
-
-      {/* Right panel — detail or empty state; editor is now in a modal */}
-      <div className="flex-1 min-w-0 overflow-hidden">
-        {selectedArticle ? (
-          <ArticleDetail
-            article={selectedArticle}
-            allArticles={articles}
-            onBack={() => setSelectedId(null)}
-            onEdit={handleEdit}
-            onNavigateTo={handleNavigateTo}
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center">
-            <p className="text-sm text-text-muted">Select an article to view it.</p>
-          </div>
-        )}
-      </div>
-
-      {/* Editor modal — renders into document.body via Radix Portal */}
-      <Modal
-        isOpen={isEditorOpen}
-        onClose={handleCancel}
-        title={editingArticle ? `Edit ${editingArticle.title}` : 'New Article'}
-        size="lg"
-      >
-        <ArticleEditor
-          article={editingArticle}
-          allArticles={articles}
-          onSaved={handleSaved}
-          onCancel={handleCancel}
-        />
-      </Modal>
+    <div className="flex h-full items-center justify-center">
+      <p className="text-sm text-text-muted">{section} — coming soon.</p>
     </div>
   )
 }
 
-function AppRoutes() {
-  const { githubConfig, currentUser } = useAppContext()
-  const [currentView, setCurrentView] = useState<View>('articles')
+// ---------------------------------------------------------------------------
+// Root layout — handles auth gates before rendering the shell
+// ---------------------------------------------------------------------------
 
+function AppLayout() {
+  const { githubConfig, currentUser } = useAppContext()
   if (!githubConfig) return <SetupScreen />
   if (!currentUser) return <LoginScreen />
-
   return (
-    <AppShell currentView={currentView} onNavigate={setCurrentView}>
-      {currentView === 'articles' && <ArticlesPanel />}
+    <AppShell>
+      <Outlet />
     </AppShell>
   )
 }
+
+// ---------------------------------------------------------------------------
+// Router — hash-based so GitHub Pages serves index.html for all paths
+// ---------------------------------------------------------------------------
+
+const router = createHashRouter([
+  {
+    path: '/',
+    element: <AppLayout />,
+    children: [
+      { index: true, element: <Navigate to="/articles" replace /> },
+      { path: 'articles', element: <ArticlesPanel /> },
+      { path: 'articles/:articleId', element: <ArticlesPanel /> },
+      { path: 'sessions', element: <ComingSoon section="Sessions" /> },
+      { path: 'sessions/:sessionId', element: <ComingSoon section="Sessions" /> },
+      { path: 'journals', element: <ComingSoon section="Journals" /> },
+      { path: 'journals/:sessionId', element: <ComingSoon section="Journals" /> },
+      { path: 'timeline', element: <ComingSoon section="Timeline" /> },
+      { path: 'timeline/:eventId', element: <ComingSoon section="Timeline" /> },
+      { path: 'users', element: <ComingSoon section="Users" /> },
+      { path: 'settings', element: <ComingSoon section="Settings" /> },
+      { path: '*', element: <NotFound /> },
+    ],
+  },
+])
+
+// ---------------------------------------------------------------------------
+// App root
+// ---------------------------------------------------------------------------
 
 export default function App() {
   return (
     <AppProvider>
       <TooltipProvider>
-        <AppRoutes />
+        <RouterProvider router={router} />
         <ToastStack />
         {import.meta.env.DEV && <DevToolbar />}
       </TooltipProvider>
