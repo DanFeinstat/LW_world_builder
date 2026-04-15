@@ -1,18 +1,21 @@
+// src/components/layout/Sidebar.tsx
+import { Link, useLocation } from 'react-router'
 import clsx from 'clsx'
 import { useAppContext } from '@/context/AppContext'
 import type { ThemePreference } from '@/types'
 
-type View = 'articles'
-
 interface SidebarProps {
-  currentView: View
-  onNavigate: (view: View) => void
   collapsed: boolean
   onToggleCollapse: () => void
 }
 
-const NAV_ITEMS: { view: View; label: string; icon: string }[] = [
-  { view: 'articles', label: 'Articles', icon: '📖' },
+const NAV_ITEMS: { path: string; label: string; icon: string }[] = [
+  { path: '/articles', label: 'Articles', icon: '📖' },
+  { path: '/sessions', label: 'Sessions', icon: '🗓' },
+  { path: '/journals', label: 'Journals', icon: '📔' },
+  { path: '/timeline', label: 'Timeline', icon: '⏳' },
+  { path: '/users', label: 'Users', icon: '👥' },
+  { path: '/settings', label: 'Settings', icon: '⚙️' },
 ]
 
 const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
@@ -21,8 +24,13 @@ const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
   { value: 'system', label: 'System' },
 ]
 
-export function Sidebar({ currentView, onNavigate, collapsed, onToggleCollapse }: SidebarProps) {
+export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
   const { currentUser, campaignMeta, theme, setTheme, setCurrentUser } = useAppContext()
+  const location = useLocation()
+
+  function isActive(path: string) {
+    return location.pathname === path || location.pathname.startsWith(path + '/')
+  }
 
   return (
     <aside
@@ -58,15 +66,15 @@ export function Sidebar({ currentView, onNavigate, collapsed, onToggleCollapse }
 
       {/* Nav */}
       <nav className="flex-1 py-3 flex flex-col gap-1 px-2">
-        {NAV_ITEMS.map(({ view, label, icon }) => (
-          <button
-            key={view}
-            onClick={() => onNavigate(view)}
-            aria-current={currentView === view ? 'page' : undefined}
+        {NAV_ITEMS.map(({ path, label, icon }) => (
+          <Link
+            key={path}
+            to={path}
+            aria-current={isActive(path) ? 'page' : undefined}
             className={clsx(
-              'flex items-center gap-3 px-2 py-2 rounded-md text-sm font-medium w-full text-left',
+              'flex items-center gap-3 px-2 py-2 rounded-md text-sm font-medium w-full',
               'transition-colors duration-fast',
-              currentView === view
+              isActive(path)
                 ? 'bg-dm-subtle text-dm'
                 : 'text-text-secondary hover:text-text-primary hover:bg-surface-sunken',
               collapsed && 'justify-center',
@@ -74,13 +82,12 @@ export function Sidebar({ currentView, onNavigate, collapsed, onToggleCollapse }
           >
             <span className="text-base leading-none shrink-0">{icon}</span>
             {!collapsed && <span>{label}</span>}
-          </button>
+          </Link>
         ))}
       </nav>
 
       {/* Footer — theme + user */}
       <div className="border-t border-border px-2 py-3 flex flex-col gap-2">
-        {/* Theme toggle */}
         {!collapsed && (
           <div className="flex items-center gap-1 px-2">
             {THEME_OPTIONS.map(({ value, label }) => (
@@ -100,7 +107,6 @@ export function Sidebar({ currentView, onNavigate, collapsed, onToggleCollapse }
           </div>
         )}
 
-        {/* User */}
         {currentUser && (
           <div
             className={clsx(
@@ -108,7 +114,6 @@ export function Sidebar({ currentView, onNavigate, collapsed, onToggleCollapse }
               collapsed && 'justify-center',
             )}
           >
-            {/* Avatar dot */}
             <span
               className="w-6 h-6 rounded-full shrink-0 flex items-center justify-center text-xs font-bold text-white"
               style={{ backgroundColor: currentUser.color }}

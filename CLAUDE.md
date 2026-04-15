@@ -158,3 +158,23 @@ No automerging — every PR requires manual review and merge.
 
 `createContext` factory (`src/context/createContext.ts`) added for all contexts:
 sets `displayName` for React DevTools, throws with clear message if used outside provider.
+
+### 2026-04-14 — React Router adoption
+
+Replaced `useState<View>` routing with `react-router` v7 `createHashRouter` (library mode — not Remix/framework mode). Hash routing chosen because GitHub Pages has no server — the `#` fragment is never sent to the server, so no redirect config needed.
+
+**URL scheme (all routes defined upfront for Phases 1–6):**
+- `#/articles` / `#/articles/:articleId`
+- `#/sessions` / `#/sessions/:sessionId`
+- `#/journals` / `#/journals/:journalId`
+- `#/timeline` / `#/timeline/:eventId`
+- `#/users`
+- `#/settings`
+
+**Architecture:**
+- `AppLayout` in `App.tsx` — handles auth gates (SetupScreen, LoginScreen) before rendering `<AppShell><Outlet /></AppShell>`
+- `ToastStack` and `DevToolbar` are inside the router (children of the root route element) so they have router context
+- `Sidebar` uses `useLocation` + `<Link>` from `react-router`; active section detected via exact match or `startsWith(path + '/')`
+- `ArticlesPanel` uses `useParams` + `useNavigate`; `articleNotFound` is guarded by `!loading` to prevent 404 flash
+
+**Testing convention:** Components that use `useLocation`, `useParams`, `useNavigate`, or render `<Link>` must be wrapped in `renderWithRouter` from `src/test/utils.tsx`. The helper accepts optional `{ initialPath, path }` — use `path` when named URL params are needed in tests.

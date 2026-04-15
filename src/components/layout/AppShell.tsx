@@ -1,16 +1,13 @@
+// src/components/layout/AppShell.tsx
 import { useState } from 'react'
 import { Sidebar } from './Sidebar'
 import { ConnectionBanner } from './ConnectionBanner'
 
-type View = 'articles'
-
 interface AppShellProps {
   children: React.ReactNode
-  currentView: View
-  onNavigate: (view: View) => void
 }
 
-export function AppShell({ children, currentView, onNavigate }: AppShellProps) {
+export function AppShell({ children }: AppShellProps) {
   const [collapsed, setCollapsed] = useState(false)
 
   return (
@@ -21,8 +18,6 @@ export function AppShell({ children, currentView, onNavigate }: AppShellProps) {
       {/* Main layout: sidebar + content */}
       <div className="flex flex-1 min-h-0">
         <Sidebar
-          currentView={currentView}
-          onNavigate={onNavigate}
           collapsed={collapsed}
           onToggleCollapse={() => setCollapsed(c => !c)}
         />

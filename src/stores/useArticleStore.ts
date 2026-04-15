@@ -8,7 +8,7 @@ import { generateId } from '@/lib/ids'
 // Types
 // ---------------------------------------------------------------------------
 
-interface ArticleStore {
+export interface ArticleStore {
   articles: Article[]
   // sha per article path — required for GitHub writes
   shas: Record<string, string>
