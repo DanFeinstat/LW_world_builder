@@ -15,12 +15,12 @@ interface StepProps {
 
 function Step({ number, title, children, note }: StepProps) {
   return (
-    <div className="flex gap-4 p-4 border-b border-border last:border-b-0">
-      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-dm-subtle text-dm text-sm font-semibold flex items-center justify-center">
+    <div className="flex gap-5 px-6 py-5 border-b border-border last:border-b-0">
+      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-dm-subtle text-dm font-display text-base font-bold flex items-center justify-center">
         {number}
       </div>
-      <div className="flex flex-col gap-1 min-w-0">
-        <p className="text-sm font-semibold text-text-primary">{title}</p>
+      <div className="flex flex-col gap-2 min-w-0 pt-1">
+        <p className="text-sm font-display font-semibold text-text-primary">{title}</p>
         <div className="text-sm text-text-secondary leading-base">{children}</div>
         {note && (
           <p className="text-xs text-text-muted mt-1 italic">{note}</p>

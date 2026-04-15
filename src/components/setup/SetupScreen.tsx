@@ -11,7 +11,7 @@ const DEFAULT_OWNER = import.meta.env.VITE_GITHUB_OWNER ?? ''
 const DEFAULT_REPO = import.meta.env.VITE_GITHUB_REPO ?? ''
 
 const PatTooltipContent = (
-  <ol className="flex flex-col gap-1 list-decimal list-inside">
+  <ol className="flex flex-col gap-2 list-decimal list-inside leading-base">
     <li>GitHub → Settings → Developer Settings → Personal access tokens → Fine-grained tokens</li>
     <li>Click "Generate new token"</li>
     <li>Repository access: select only the shared campaign repo</li>
@@ -190,7 +190,7 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-2">
         <label htmlFor={htmlFor} className="text-sm font-medium text-text-primary">
           {label}
         </label>

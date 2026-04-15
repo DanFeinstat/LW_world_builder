@@ -115,11 +115,11 @@ export function Tooltip({ content, children, side = 'top', align = 'center' }: T
           ref={contentRef}
           side={side}
           align={align}
-          sideOffset={8}
+          sideOffset={10}
           className={clsx(
-            'z-modal max-w-xs rounded-md border border-border',
-            'bg-surface-raised px-3 py-2 shadow-md',
-            'text-sm text-text-primary',
+            'z-modal max-w-sm rounded-lg border border-border-strong',
+            'bg-surface-raised px-4 py-3 shadow-lg',
+            'text-sm text-text-primary leading-base',
           )}
         >
           {content}
