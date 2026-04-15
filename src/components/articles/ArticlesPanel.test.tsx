@@ -5,6 +5,7 @@ import { ArticlesPanel } from './ArticlesPanel'
 import { renderWithRouter } from '@/test/utils'
 import type { Article } from './types'
 import type { User, GitHubConfig } from '@/types'
+import type { ArticleStore } from '@/stores/useArticleStore'
 
 vi.mock('@/context/AppContext', () => ({
   useAppContext: vi.fn(),
@@ -47,7 +48,7 @@ const testArticle: Article = {
 }
 
 function mockStore(overrides: { articles?: Article[]; loading?: boolean } = {}) {
-  vi.mocked(useArticleStore).mockImplementation((selector: (s: any) => any) =>
+  vi.mocked(useArticleStore).mockImplementation(<T,>(selector: (s: ArticleStore) => T): T =>
     selector({
       articles: overrides.articles ?? [testArticle],
       loading: overrides.loading ?? false,
