@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { TooltipProvider } from '@radix-ui/react-tooltip'
 import { AppProvider, useAppContext } from '@/context/AppContext'
 import { SetupScreen } from '@/components/setup/SetupScreen'
 import { LoginScreen } from '@/components/auth/LoginScreen'
@@ -118,9 +119,11 @@ function AppRoutes() {
 export default function App() {
   return (
     <AppProvider>
-      <AppRoutes />
-      <ToastStack />
-      {import.meta.env.DEV && <DevToolbar />}
+      <TooltipProvider>
+        <AppRoutes />
+        <ToastStack />
+        {import.meta.env.DEV && <DevToolbar />}
+      </TooltipProvider>
     </AppProvider>
   )
 }
