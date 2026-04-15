@@ -44,7 +44,13 @@ function AppLayout() {
 const router = createHashRouter([
   {
     path: '/',
-    element: <AppLayout />,
+    element: (
+      <>
+        <AppLayout />
+        <ToastStack />
+        {import.meta.env.DEV && <DevToolbar />}
+      </>
+    ),
     children: [
       { index: true, element: <Navigate to="/articles" replace /> },
       { path: 'articles', element: <ArticlesPanel /> },
@@ -52,7 +58,7 @@ const router = createHashRouter([
       { path: 'sessions', element: <ComingSoon section="Sessions" /> },
       { path: 'sessions/:sessionId', element: <ComingSoon section="Sessions" /> },
       { path: 'journals', element: <ComingSoon section="Journals" /> },
-      { path: 'journals/:sessionId', element: <ComingSoon section="Journals" /> },
+      { path: 'journals/:journalId', element: <ComingSoon section="Journals" /> },
       { path: 'timeline', element: <ComingSoon section="Timeline" /> },
       { path: 'timeline/:eventId', element: <ComingSoon section="Timeline" /> },
       { path: 'users', element: <ComingSoon section="Users" /> },
@@ -71,8 +77,6 @@ export default function App() {
     <AppProvider>
       <TooltipProvider>
         <RouterProvider router={router} />
-        <ToastStack />
-        {import.meta.env.DEV && <DevToolbar />}
       </TooltipProvider>
     </AppProvider>
   )
